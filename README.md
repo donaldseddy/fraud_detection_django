@@ -54,6 +54,13 @@ fraud_detection_django/
 
 ### Installations variables d'environnement
     - usage de la biblio python-decouple pour la cohabitation des variable d'env dev et prod
+
+    dans env /
+    │──.env.local 
+            DATABASE_NAME=fraud_detection
+            DATABASE_USER=
+            DATABASE_PASSWORD=
+            DATABASE_HOST=localhost
     
 
 ### **Configuration base de données**
@@ -62,5 +69,19 @@ fraud_detection_django/
     - Model Prediction pour Stocke les résultats du modèle ML pour chaque utilisateur
 
 ### **Configuration Model ML**
-    - genereration hazardeuse mais coherente des utilisateur grace a data_generation.py en introduisant une proportion de fraudeurs ici elle est 10% pour 1000 et 5% pour 10K
-    - 
+    - genereration hazardeuse mais coherente des utilisateur grace a data_generation.py en introduisant une proportion de fraudeurs ici elle est 10% pour 1000 et 5% pour 10K avec la commande 
+            python ml/data_generation.py --batch
+    - on deploie le model sur le dataset genere avec la commande 
+            python -m ml.modeling
+            qui trouve la meilleur combinaison trouvée par RandomizedSearchCV pour le RandomForest.va generer model.pkl 
+            mais le resultat montre que mon dataset simulé est trop simple / trop séparé → les fraudeurs sont faciles à distinguer plus que 
+            precision = 1.00  
+            recall    = 1.00  
+            f1-score  = 1.00  
+            accuracy  = 1.00  
+
+    - Je rend le model interpretable avec explainability.py
+    - Importer les utilisateurs dans PostgreSQL 
+        python manage.py load_users --csv data/users_10k.csv
+    - Prédire et stocker en base
+        python manage.py predict_users --model ml/model.pkl
